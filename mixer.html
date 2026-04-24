@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Distribusi TMR Mixer - PT Bumi Rojo Koyo</title>
+    <title>Distribusi TMR Mixer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style> body { font-family: 'Poppins', sans-serif; } </style>
 </head>
 <body class="bg-gray-100 min-h-screen text-gray-800 pb-10">
@@ -35,12 +34,10 @@
     </div>
 
     <script>
-        // GANTI DENGAN URL APPS SCRIPT ANDA
+        // GANTI DENGAN URL APPS SCRIPT ANDA YANG SAMA (Pastikan sudah "Versi Baru")
         const scriptURL = 'https://script.google.com/macros/s/AKfycbwGbcKGY4vgTG6_y686uovBSWSZQvMKRpLGLu2aw4Qup6CJGDYN6qji3WPLb152rhFl/exec';
         
-        // Simpan waktu per baris secara lokal (agar tidak hilang saat geser menu)
-        let timeLog = {};
-
+        // Dijalankan saat web dibuka
         window.addEventListener('DOMContentLoaded', fetchPendingMixes);
 
         async function fetchPendingMixes() {
@@ -48,6 +45,7 @@
             listContainer.innerHTML = `<p class="text-center text-sm text-gray-400 mt-10 flex justify-center items-center"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Memuat data...</p>`;
             
             try {
+                // Menarik data dengan parameter action=getPendingMixes
                 const response = await fetch(scriptURL + '?action=getPendingMixes', { method: 'GET', redirect: 'follow' });
                 const data = await response.json();
 
@@ -57,7 +55,7 @@
                     throw new Error("Gagal mengambil data");
                 }
             } catch (error) {
-                listContainer.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded-lg text-center text-sm border border-red-200">Gagal terhubung ke server.</div>`;
+                listContainer.innerHTML = `<div class="bg-red-50 text-red-500 p-4 rounded-lg text-center text-sm border border-red-200">Gagal terhubung ke server. Pastikan koneksi internet stabil.</div>`;
             }
         }
 
@@ -68,7 +66,9 @@
             if (mixes.length === 0) {
                 listContainer.innerHTML = `
                 <div class="bg-green-50 border border-green-200 p-6 rounded-xl text-center shadow-sm">
+                    <svg class="mx-auto h-12 w-12 text-green-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     <p class="text-gray-700 font-semibold">Semua Beres!</p>
+                    <p class="text-xs text-gray-500">Tidak ada pakan yang menunggu didistribusikan saat ini.</p>
                 </div>`;
                 return;
             }
@@ -76,100 +76,64 @@
             listContainer.innerHTML = '';
             
             mixes.forEach(mix => {
-                let jamSaja = mix.waktu.includes(', ') ? mix.waktu.split(', ')[1] : mix.waktu;
+                // Ekstrak jam dari Waktu Input
+                let jamSaja = mix.waktu;
+                if(mix.waktu.includes(', ')) { jamSaja = mix.waktu.split(', ')[1]; }
 
                 const card = document.createElement('div');
-                card.className = 'bg-white border rounded-xl p-4 shadow-sm relative overflow-hidden transition mb-4';
+                card.className = 'bg-white border rounded-xl p-4 shadow-sm relative overflow-hidden transition';
                 card.id = `card-${mix.row}`;
                 card.innerHTML = `
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
                     <div class="flex justify-between items-start mb-2 ml-2">
-                        <span id="badge-status-${mix.row}" class="bg-orange-100 text-orange-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase">Waiting</span>
-                        <span class="text-[10px] text-gray-400 flex items-center">
-                            <i class="fas fa-clock mr-1"></i> ${jamSaja}
+                        <span class="bg-blue-50 text-blue-700 text-xs font-bold px-2 py-1 rounded">Shift ${mix.shift}</span>
+                        <span class="text-xs text-gray-400 flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${jamSaja}
                         </span>
                     </div>
                     <div class="ml-2 mb-4">
-                        <h3 class="text-sm font-bold text-gray-800 mb-1">${mix.pen}</h3>
-                        <p class="text-xs text-gray-500 font-medium">Target Tonase: <span class="text-blue-600">${mix.tonaseAkhir} kg</span></p>
+                        <h3 class="text-sm font-bold text-gray-800 mb-1 leading-tight">${mix.pen}</h3>
+                        <p class="text-xs text-gray-500">Total Tonase Akhir: <span class="font-bold text-gray-800">${mix.tonaseAkhir}</span></p>
                     </div>
-
-                    <div class="ml-2 space-y-2">
-                        <button id="btn-start-${mix.row}" onclick="handleStartMix(${mix.row})" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-xs transition shadow-sm">
-                            <i class="fas fa-play mr-2"></i>MULAI ADUK
-                        </button>
-
-                        <button id="btn-stop-${mix.row}" onclick="handleStopMix(${mix.row})" class="hidden w-full bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 rounded-lg text-xs transition shadow-sm">
-                            <i class="fas fa-stop mr-2"></i>SELESAI ADUK (STOP)
-                        </button>
-
-                        <button id="btn-dist-${mix.row}" onclick="handleFinishDist(${mix.row})" class="hidden w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg text-xs transition shadow-sm">
-                            <i class="fas fa-check-double mr-2"></i>SELESAI DISTRIBUSI
-                        </button>
-                    </div>
+                    <button onclick="tandaiDistribusi(${mix.row})" id="btn-${mix.row}" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none transition text-sm flex justify-center items-center shadow-sm">
+                        Tandai Sudah Distribusi
+                    </button>
                 `;
                 listContainer.appendChild(card);
             });
         }
 
-        // LOGIKA PROSES
-        function handleStartMix(row) {
-            timeLog[row] = { start: new Date() };
-            
-            document.getElementById(`btn-start-${row}`).classList.add('hidden');
-            document.getElementById(`btn-stop-${row}`).classList.remove('hidden');
-            
-            const badge = document.getElementById(`badge-status-${row}`);
-            badge.innerText = "Mixing...";
-            badge.className = "bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase";
-        }
+        function tandaiDistribusi(rowNumber) {
+            // Konfirmasi keamanan agar tidak salah pencet
+            if(!confirm("Apakah pakan ini benar-benar sudah didistribusikan ke kandang?")) return;
 
-        function handleStopMix(row) {
-            timeLog[row].stop = new Date();
-            
-            // Hitung durasi mixing (detik ke menit)
-            let diff = Math.round((timeLog[row].stop - timeLog[row].start) / 60000);
-            alert("Mesin Berhenti. Waktu aduk: " + diff + " menit. Silakan distribusi ke kandang.");
-
-            document.getElementById(`btn-stop-${row}`).classList.add('hidden');
-            document.getElementById(`btn-dist-${row}`).classList.remove('hidden');
-            
-            const badge = document.getElementById(`badge-status-${row}`);
-            badge.innerText = "OTW Kandang";
-            badge.className = "bg-yellow-100 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded uppercase";
-        }
-
-        function handleFinishDist(row) {
-            if(!confirm("Pakan sudah habis didistribusikan?")) return;
-
-            const btn = document.getElementById(`btn-dist-${row}`);
+            const btn = document.getElementById(`btn-${rowNumber}`);
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
             btn.disabled = true;
-            btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i>Menyimpan...`;
-
-            const finishTime = new Date();
+            btn.classList.replace('bg-blue-600', 'bg-blue-400');
 
             let formData = new FormData();
-            formData.append('action', 'updateStatusComplex'); // Pastikan fungsi ini ada di Code.gs
-            formData.append('rowNumber', row);
-            formData.append('startTime', timeLog[row].start.toISOString());
-            formData.append('stopTime', timeLog[row].stop.toISOString());
-            formData.append('finishTime', finishTime.toISOString());
+            formData.append('action', 'updateStatus');
+            formData.append('rowNumber', rowNumber);
 
             fetch(scriptURL, { method: 'POST', body: formData })
-                .then(res => res.json())
+                .then(response => response.json())
                 .then(data => {
                     if(data.result === 'success') {
-                        const card = document.getElementById(`card-${row}`);
+                        // Hilangkan card dari layar dengan animasi halus
+                        const card = document.getElementById(`card-${rowNumber}`);
                         card.style.opacity = '0';
-                        setTimeout(() => fetchPendingMixes(), 300);
+                        setTimeout(() => fetchPendingMixes(), 300); // Tarik data ulang
                     } else {
                         throw new Error(data.error);
                     }
                 })
-                .catch(err => {
-                    alert("Gagal simpan: " + err.message);
+                .catch(error => {
+                    alert("Gagal merubah status: " + error.message);
+                    btn.innerHTML = "Coba Lagi";
                     btn.disabled = false;
-                    btn.innerHTML = `<i class="fas fa-check-double mr-2"></i>SELESAI DISTRIBUSI`;
+                    btn.classList.replace('bg-blue-400', 'bg-blue-600');
                 });
         }
     </script>
