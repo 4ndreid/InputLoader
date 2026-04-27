@@ -15,21 +15,129 @@
         .pen-locked-2x { background: #fef2f2 !important; border: 1px solid #fca5a5 !important; opacity: 0.5; }
         .pen-disabled-limit { opacity: 0.4; filter: grayscale(1); }
         .target-val { font-size: 5.5rem; font-weight: 800; color: #ffffff; line-height: 1; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .target-card { background: #064e3b; border-radius: 35px; padding: 2.5rem 1rem; text-center; box-shadow: 0 15px 35px rgba(6, 78, 59, 0.15); }
+        .target-card { background: #064e3b; border-radius: 35px; padding: 2.5rem 1rem; text-align: center; box-shadow: 0 15px 35px rgba(6, 78, 59, 0.15); }
+
+        /* ⚡ LISTRIK MUTER HIJAU */
+        .electric-green-wrap {
+            position: relative;
+            border-radius: 22px;
+            padding: 2px;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .electric-green-wrap::before {
+            content: "";
+            position: absolute;
+            inset: -90px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 60deg,
+                #10b981 100deg,
+                #34d399 135deg,
+                #6ee7b7 165deg,
+                #10b981 195deg,
+                transparent 255deg,
+                transparent 360deg
+            );
+            animation: electricGreenRotate 2.1s linear infinite;
+        }
+
+        .electric-green-wrap::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 20px;
+            background: #f8fafc;
+            box-shadow:
+                0 0 8px rgba(16,185,129,.55),
+                0 0 18px rgba(16,185,129,.35),
+                inset 0 0 8px rgba(16,185,129,.12);
+        }
+
+        .electric-green-wrap > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .electric-green-wrap select,
+        .electric-green-wrap input {
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+        }
+
+        .electric-pen {
+            position: relative;
+            border-radius: 20px;
+            padding: 2px;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .electric-pen::before {
+            content: "";
+            position: absolute;
+            inset: -80px;
+            background: conic-gradient(
+                from 0deg,
+                transparent 0deg,
+                transparent 70deg,
+                #10b981 105deg,
+                #34d399 140deg,
+                #6ee7b7 170deg,
+                #10b981 200deg,
+                transparent 260deg,
+                transparent 360deg
+            );
+            animation: electricGreenRotate 2.4s linear infinite;
+        }
+
+        .electric-pen::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 18px;
+            background: #ffffff;
+            box-shadow:
+                0 0 8px rgba(16,185,129,.45),
+                inset 0 0 6px rgba(16,185,129,.12);
+        }
+
+        .electric-pen > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes electricGreenRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
+
 <body class="p-5 max-w-lg mx-auto pb-28">
     <header class="flex justify-between items-center mb-10 pt-4">
-        <h1 class="text-2xl font-extrabold tracking-tighter text-slate-900 uppercase">TMR<span class="text-emerald-500 italic">LOADER</span></h1>
+        <h1 class="text-2xl font-extrabold tracking-tighter text-slate-900 uppercase">
+            TMR<span class="text-emerald-500 italic">LOADER</span>
+        </h1>
         <div id="clock" class="text-sm font-extrabold bg-emerald-500 text-white px-5 py-2 rounded-2xl">00:00</div>
     </header>
 
     <form id="tmrForm" class="space-y-8">
         <div class="glass-card p-6 space-y-4">
-            <select id="opSel" required class="w-full neo-input p-5 text-base appearance-none"></select>
-            <select id="shSel" required class="w-full neo-input p-5 text-base appearance-none">
-                <option value="Pagi">SHIFT 1 (PAGI)</option><option value="Siang">SHIFT 2 (SIANG)</option><option value="Malam">SHIFT 3 (MALAM)</option>
-            </select>
+            <div class="electric-green-wrap">
+                <select id="opSel" required class="w-full neo-input p-5 text-base appearance-none"></select>
+            </div>
+
+            <div class="electric-green-wrap">
+                <select id="shSel" required class="w-full neo-input p-5 text-base appearance-none">
+                    <option value="Pagi">SHIFT 1 (PAGI)</option>
+                    <option value="Siang">SHIFT 2 (SIANG)</option>
+                    <option value="Malam">SHIFT 3 (MALAM)</option>
+                </select>
+            </div>
         </div>
 
         <div class="glass-card p-7">
@@ -41,10 +149,29 @@
         </div>
 
         <div class="space-y-6">
-            <div class="target-card"><span class="text-emerald-300 font-black text-xs tracking-widest">TARGET SISA</span><div id="t-sisa" class="target-val my-6">0</div><input type="number" id="a-sisa" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl"></div>
-            <div class="target-card"><span class="text-emerald-300 font-black text-xs tracking-widest">TARGET ODOT</span><div id="t-odot" class="target-val my-6">0</div><input type="number" id="a-odot" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl"></div>
-            <div class="target-card"><span class="text-emerald-300 font-black text-xs tracking-widest">TARGET JAGUNG</span><div id="t-jagung" class="target-val my-6">0</div><input type="number" id="a-jagung" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl"></div>
-            <div class="target-card"><span class="text-emerald-300 font-black text-xs tracking-widest">TARGET SILASE</span><div id="t-silase" class="target-val my-6">0</div><input type="number" id="a-silase" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl"></div>
+            <div class="target-card">
+                <span class="text-emerald-300 font-black text-xs tracking-widest">TARGET SISA</span>
+                <div id="t-sisa" class="target-val my-6">0</div>
+                <input type="number" id="a-sisa" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl">
+            </div>
+
+            <div class="target-card">
+                <span class="text-emerald-300 font-black text-xs tracking-widest">TARGET ODOT</span>
+                <div id="t-odot" class="target-val my-6">0</div>
+                <input type="number" id="a-odot" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl">
+            </div>
+
+            <div class="target-card">
+                <span class="text-emerald-300 font-black text-xs tracking-widest">TARGET JAGUNG</span>
+                <div id="t-jagung" class="target-val my-6">0</div>
+                <input type="number" id="a-jagung" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl">
+            </div>
+
+            <div class="target-card">
+                <span class="text-emerald-300 font-black text-xs tracking-widest">TARGET SILASE</span>
+                <div id="t-silase" class="target-val my-6">0</div>
+                <input type="number" id="a-silase" placeholder="AKTUAL" class="w-full max-w-[200px] neo-input p-4 text-center text-xl">
+            </div>
             
             <div class="bg-gradient-to-br from-emerald-500 to-emerald-700 p-10 rounded-[45px] text-center shadow-2xl relative overflow-hidden">
                 <span class="text-xs font-black text-white uppercase block mb-3 tracking-widest italic">Target Konsentrat</span>
@@ -55,17 +182,26 @@
 
         <div class="glass-card p-8 space-y-6">
             <h2 class="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">Digital Molases Flow</h2>
+
             <div class="grid grid-cols-2 gap-5">
-                <input type="number" id="m-s" placeholder="Awal" class="w-full neo-input p-5 text-center">
-                <input type="number" id="m-a" placeholder="Akhir" class="w-full neo-input p-5 text-center">
+                <div class="electric-green-wrap">
+                    <input type="number" id="m-s" placeholder="Awal" class="w-full neo-input p-5 text-center">
+                </div>
+
+                <div class="electric-green-wrap">
+                    <input type="number" id="m-a" placeholder="Akhir" class="w-full neo-input p-5 text-center">
+                </div>
             </div>
+
             <div class="flex justify-between items-center bg-slate-900 p-6 rounded-[30px] shadow-xl">
                 <span class="text-xs font-black text-emerald-400 uppercase italic">Total KG</span>
                 <span class="text-4xl font-black text-white" id="m-h">0</span>
             </div>
         </div>
 
-        <button type="submit" id="btn" class="w-full bg-slate-900 text-white font-black py-8 rounded-[35px] text-2xl shadow-2xl hover:bg-emerald-600 active:scale-95 transition-all">SIMPAN & START MIXING</button>
+        <button type="submit" id="btn" class="w-full bg-slate-900 text-white font-black py-8 rounded-[35px] text-2xl shadow-2xl hover:bg-emerald-600 active:scale-95 transition-all">
+            SIMPAN & START MIXING
+        </button>
     </form>
 
     <script>
@@ -73,22 +209,46 @@
         let DB = null;
 
         async function init() {
-            const res = await fetch(URL); DB = await res.json();
-            const op = document.getElementById('opSel'); op.innerHTML = '<option disabled selected>PILIH OPERATOR</option>';
-            DB.users.forEach(u => op.innerHTML += `<option value="${u}">${u}</option>`); render();
+            const res = await fetch(URL);
+            DB = await res.json();
+
+            const op = document.getElementById('opSel');
+            op.innerHTML = '<option disabled selected>PILIH OPERATOR</option>';
+
+            DB.users.forEach(u => op.innerHTML += `<option value="${u}">${u}</option>`);
+            render();
         }
 
         function render() {
-            const sh = document.getElementById('shSel').value; const con = document.getElementById('pCon'); con.innerHTML = '';
+            const sh = document.getElementById('shSel').value;
+            const con = document.getElementById('pCon');
+            con.innerHTML = '';
+
             DB.pens.forEach(p => {
-                let cnt = 0; if(DB.history) DB.history.forEach(h => { if(h.shift === sh && h.pens.includes(p)) cnt++; });
+                let cnt = 0;
+
+                if (DB.history) {
+                    DB.history.forEach(h => {
+                        if (h.shift === sh && h.pens.includes(p)) cnt++;
+                    });
+                }
+
                 let sClass = cnt === 1 ? "pen-done-1x" : (cnt >= 2 ? "pen-locked-2x" : "pen-normal");
                 let sLabel = cnt === 1 ? '● Done 1x' : (cnt >= 2 ? '✖ Locked 2x' : '');
                 let dis = cnt >= 2;
 
                 const lbl = document.createElement('label');
-                lbl.className = `flex justify-between p-5 rounded-2xl items-center transition-all ${sClass} ${dis ? 'pointer-events-none' : 'cursor-pointer hover:bg-emerald-50 shadow-sm'}`;
-                lbl.innerHTML = `<div class="flex flex-col"><span class="font-bold text-base text-slate-700">${p}</span><span class="text-[9px] font-black uppercase text-amber-600">${sLabel}</span></div><input type="checkbox" value="${p}" ${dis?'disabled':''} class="pen-cb w-6 h-6 accent-emerald-500 rounded-lg">`;
+
+                lbl.className = `electric-pen flex justify-between p-5 rounded-2xl items-center transition-all ${sClass} ${dis ? 'pointer-events-none' : 'cursor-pointer hover:bg-emerald-50 shadow-sm'}`;
+
+                lbl.innerHTML = `
+                    <div class="flex flex-col">
+                        <span class="font-bold text-base text-slate-700">${p}</span>
+                        <span class="text-[9px] font-black uppercase text-amber-600">${sLabel}</span>
+                    </div>
+                    <input type="checkbox" value="${p}" ${dis ? 'disabled' : ''} class="pen-cb w-6 h-6 accent-emerald-500 rounded-lg">
+                `;
+
                 lbl.querySelector('input').addEventListener('change', handleSelection);
                 con.appendChild(lbl);
             });
@@ -97,47 +257,125 @@
         function handleSelection() {
             const selCount = document.querySelectorAll('.pen-cb:checked').length;
             const allCbs = document.querySelectorAll('.pen-cb');
+
             document.getElementById('pCount').innerText = selCount + "/3";
+
             allCbs.forEach(cb => {
-                if(selCount >= 3 && !cb.checked) { cb.disabled = true; cb.parentElement.classList.add('pen-disabled-limit'); }
-                else { 
-                    let pName = cb.value; let sh = document.getElementById('shSel').value; let hCnt = 0;
-                    if(DB.history) DB.history.forEach(h => { if(h.shift === sh && h.pens.includes(pName)) hCnt++; });
-                    if(hCnt < 2) { cb.disabled = false; cb.parentElement.classList.remove('pen-disabled-limit'); }
+                if (selCount >= 3 && !cb.checked) {
+                    cb.disabled = true;
+                    cb.parentElement.classList.add('pen-disabled-limit');
+                } else { 
+                    let pName = cb.value;
+                    let sh = document.getElementById('shSel').value;
+                    let hCnt = 0;
+
+                    if (DB.history) {
+                        DB.history.forEach(h => {
+                            if (h.shift === sh && h.pens.includes(pName)) hCnt++;
+                        });
+                    }
+
+                    if (hCnt < 2) {
+                        cb.disabled = false;
+                        cb.parentElement.classList.remove('pen-disabled-limit');
+                    }
                 }
             });
+
             calc();
         }
 
         function calc() {
-            const sh = document.getElementById('shSel').value; const sel = Array.from(document.querySelectorAll('.pen-cb:checked')).map(c => c.value);
+            const sh = document.getElementById('shSel').value;
+            const sel = Array.from(document.querySelectorAll('.pen-cb:checked')).map(c => c.value);
+
             let t = { s:0, o:0, j:0, si:0, k:0 };
-            if(DB.targets && sel.length > 0) {
-                let row = -1; for(let i=0; i<DB.targets.length; i++) if(DB.targets[i][0] === sh) { row = i; break; }
-                if(row !== -1) sel.forEach(p => {
-                    for(let j=row+1; j<DB.targets.length; j++) { 
-                        if(DB.targets[j][0] === p) { t.s += parseFloat(DB.targets[j][1])||0; t.o += parseFloat(DB.targets[j][2])||0; t.j += parseFloat(DB.targets[j][3])||0; t.si += parseFloat(DB.targets[j][4])||0; t.k += parseFloat(DB.targets[j][5])||0; break; }
-                        if(["Pagi","Siang","Malam"].includes(DB.targets[j][0])) break; 
+
+            if (DB.targets && sel.length > 0) {
+                let row = -1;
+
+                for (let i = 0; i < DB.targets.length; i++) {
+                    if (DB.targets[i][0] === sh) {
+                        row = i;
+                        break;
                     }
-                });
+                }
+
+                if (row !== -1) {
+                    sel.forEach(p => {
+                        for (let j = row + 1; j < DB.targets.length; j++) { 
+                            if (DB.targets[j][0] === p) {
+                                t.s += parseFloat(DB.targets[j][1]) || 0;
+                                t.o += parseFloat(DB.targets[j][2]) || 0;
+                                t.j += parseFloat(DB.targets[j][3]) || 0;
+                                t.si += parseFloat(DB.targets[j][4]) || 0;
+                                t.k += parseFloat(DB.targets[j][5]) || 0;
+                                break;
+                            }
+
+                            if (["Pagi","Siang","Malam"].includes(DB.targets[j][0])) break; 
+                        }
+                    });
+                }
             }
-            ['t-sisa','t-odot','t-jagung','t-silase','t-kon'].forEach((id, i) => document.getElementById(id).innerText = Math.round(Object.values(t)[i]));
+
+            ['t-sisa','t-odot','t-jagung','t-silase','t-kon'].forEach((id, i) => {
+                document.getElementById(id).innerText = Math.round(Object.values(t)[i]);
+            });
         }
 
         document.getElementById('m-s').oninput = document.getElementById('m-a').oninput = () => {
-            let r = (parseFloat(document.getElementById('m-a').value)||0) - (parseFloat(document.getElementById('m-s').value)||0);
+            let r = (parseFloat(document.getElementById('m-a').value) || 0) - (parseFloat(document.getElementById('m-s').value) || 0);
             document.getElementById('m-h').innerText = r > 0 ? Math.round(r) : 0;
         };
 
         document.getElementById('tmrForm').onsubmit = async (e) => {
-            e.preventDefault(); const b = document.getElementById('btn'); const sel = Array.from(document.querySelectorAll('.pen-cb:checked')).map(c => c.value);
-            if(sel.length === 0) return alert("Pilih minimal 1 PEN!");
-            b.disabled = true; b.innerText = "SEDANG MENYIMPAN...";
-            const p = { formType: "loader", operator: document.getElementById('opSel').value, shift: document.getElementById('shSel').value, pens: sel, aktual: { sisa: document.getElementById('a-sisa').value, odot: document.getElementById('a-odot').value, jagung: document.getElementById('a-jagung').value, silase: document.getElementById('a-silase').value, konsentrat: document.getElementById('a-kon').value }, molases: { sebelum: document.getElementById('m-s').value, akhir: document.getElementById('m-a').value, total: document.getElementById('m-h').innerText } };
-            await fetch(URL, { method: 'POST', body: JSON.stringify(p) }); alert("BERHASIL!"); location.reload();
+            e.preventDefault();
+
+            const b = document.getElementById('btn');
+            const sel = Array.from(document.querySelectorAll('.pen-cb:checked')).map(c => c.value);
+
+            if (sel.length === 0) return alert("Pilih minimal 1 PEN!");
+
+            b.disabled = true;
+            b.innerText = "SEDANG MENYIMPAN...";
+
+            const p = {
+                formType: "loader",
+                operator: document.getElementById('opSel').value,
+                shift: document.getElementById('shSel').value,
+                pens: sel,
+                aktual: {
+                    sisa: document.getElementById('a-sisa').value,
+                    odot: document.getElementById('a-odot').value,
+                    jagung: document.getElementById('a-jagung').value,
+                    silase: document.getElementById('a-silase').value,
+                    konsentrat: document.getElementById('a-kon').value
+                },
+                molases: {
+                    sebelum: document.getElementById('m-s').value,
+                    akhir: document.getElementById('m-a').value,
+                    total: document.getElementById('m-h').innerText
+                }
+            };
+
+            await fetch(URL, {
+                method: 'POST',
+                body: JSON.stringify(p)
+            });
+
+            alert("BERHASIL!");
+            location.reload();
         };
 
-        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace(':', '.'); }, 1000);
+        setInterval(() => {
+            document.getElementById('clock').innerText =
+                new Date().toLocaleTimeString('id-ID', {
+                    hour:'2-digit',
+                    minute:'2-digit'
+                }).replace(':', '.');
+        }, 1000);
+
         document.getElementById('shSel').addEventListener('change', render);
         window.onload = init;
     </script>
