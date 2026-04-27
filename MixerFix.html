@@ -253,7 +253,7 @@ async function saveDist(pName, ton, idx) {
 setInterval(() => {
     document.getElementById('clock').innerText =
         new Date().toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}).replace(':', '.');
-}, 1000);
+}, 500);
 
 window.onload = init;
 
