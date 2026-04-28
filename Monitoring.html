@@ -3,91 +3,427 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supervisor Live Monitor v12</title>
+    <title>Supervisor Live Monitor v12 Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
-        body { background: #f1f5f9; font-family: 'Plus Jakarta Sans', sans-serif; }
-        .shift-column { background: rgba(255,255,255,0.6); border-radius: 20px; min-height: 400px; }
-        .card-active { background: #fff; border-left: 5px solid #f59e0b; }
-        .card-done { background: #fff; border-left: 5px solid #10b981; }
+        body {
+            background: #f1f5f9;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(16,185,129,.12), transparent 30%),
+                radial-gradient(circle at 80% 30%, rgba(245,158,11,.10), transparent 30%),
+                radial-gradient(circle at 50% 80%, rgba(16,185,129,.10), transparent 35%);
+            animation: moveBg 12s linear infinite alternate;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes moveBg {
+            from { transform: translate(0,0) scale(1); }
+            to { transform: translate(40px,40px) scale(1.08); }
+        }
+
+        .live-dots {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-left: 14px;
+        }
+
+        .live-dots span {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: #10b981;
+            box-shadow:
+                0 0 8px #10b981,
+                0 0 18px rgba(16,185,129,.8);
+            animation: liveDot 1.2s infinite ease-in-out;
+        }
+
+        .live-dots span:nth-child(2) { animation-delay: .15s; }
+        .live-dots span:nth-child(3) { animation-delay: .3s; }
+        .live-dots span:nth-child(4) { animation-delay: .45s; opacity: .35; }
+
+        @keyframes liveDot {
+            0%, 100% {
+                transform: scale(.65);
+                opacity: .35;
+            }
+            50% {
+                transform: scale(1.15);
+                opacity: 1;
+            }
+        }
+
+        .refresh-box {
+            background: rgba(255,255,255,.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16,185,129,.18);
+            border-radius: 18px;
+            padding: 12px 16px;
+            box-shadow: 0 12px 30px rgba(15,23,42,.06);
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 999px;
+            padding: 9px 18px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            box-shadow:
+                0 0 10px rgba(16,185,129,.55),
+                0 8px 20px rgba(16,185,129,.28);
+            transition: all .2s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 16px rgba(16,185,129,.85),
+                0 14px 28px rgba(16,185,129,.32);
+        }
+
+        .refresh-btn:active {
+            transform: scale(.95);
+        }
+
+        .shift-column {
+            background: rgba(255,255,255,0.62);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            min-height: 400px;
+            border: 1px solid rgba(255,255,255,.8);
+            box-shadow: 0 20px 50px rgba(15,23,42,.05);
+        }
+
+        .card-hover {
+            transition: all .25s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px) scale(1.015);
+            box-shadow: 0 18px 35px rgba(15,23,42,.14);
+        }
+
+        button:active {
+            transform: scale(.95);
+        }
+
+        .card-active {
+            background: #fff;
+            border-left: 5px solid #f59e0b;
+            box-shadow:
+                0 0 12px rgba(245,158,11,.45),
+                0 10px 25px rgba(15,23,42,.08);
+        }
+
+        .pulse-live {
+            animation: pulseLive 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulseLive {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.04); opacity: .88; }
+        }
+
+        .scan-line {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line::before {
+            content: "";
+            position: absolute;
+            left: -50%;
+            top: 0;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255,255,255,.45),
+                transparent
+            );
+            animation: scanMove 2.6s linear infinite;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% { left: -60%; }
+            100% { left: 120%; }
+        }
+
+        .electric-done {
+            position: relative;
+            border-radius: 16px;
+            padding: 2px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .electric-done::before {
+            content: "";
+            position: absolute;
+            inset: -80px;
+            background: conic-gradient(
+                transparent 0deg,
+                transparent 70deg,
+                #10b981 100deg,
+                #34d399 135deg,
+                #6ee7b7 165deg,
+                #10b981 195deg,
+                transparent 260deg,
+                transparent 360deg
+            );
+            animation: spinGreen 2.2s linear infinite;
+        }
+
+        .electric-done::after {
+            content: "";
+            position: absolute;
+            inset: 2px;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow:
+                0 0 8px rgba(16,185,129,.55),
+                0 0 16px rgba(16,185,129,.28),
+                inset 0 0 7px rgba(16,185,129,.13);
+        }
+
+        .electric-done > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes spinGreen {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 5px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            box-shadow: 0 0 10px rgba(16,185,129,.8);
+            transition: width .8s ease;
+        }
+
+        .status-done {
+            color: #059669;
+            text-shadow: 0 0 10px rgba(16,185,129,.35);
+        }
+
+        .status-active {
+            color: #f97316;
+            text-shadow: 0 0 10px rgba(249,115,22,.4);
+        }
+
+        .mini-badge {
+            background: rgba(16,185,129,.12);
+            color: #059669;
+            border: 1px solid rgba(16,185,129,.25);
+            border-radius: 999px;
+            padding: 3px 9px;
+        }
     </style>
 </head>
+
 <body class="p-4">
     <header class="max-w-7xl mx-auto flex justify-between items-center mb-8">
-        <h1 class="text-2xl font-800 text-slate-800 uppercase tracking-tighter">Live<span class="text-emerald-500">Monitor</span></h1>
-        <div class="text-right">
-            <p id="todayDate" class="text-xs font-bold text-slate-500"></p>
-            <button onclick="loadData()" class="text-[10px] font-black text-emerald-600 uppercase">Refresh System</button>
+        <div class="flex items-center">
+            <h1 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">
+                Live<span class="text-emerald-500">Monitor</span>
+            </h1>
+
+            <div class="live-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <div class="refresh-box text-right">
+            <p id="todayDate" class="text-xs font-bold text-slate-500 mb-2"></p>
+            <button onclick="loadData()" class="refresh-btn">
+                Refresh System
+            </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto space-y-8">
         <section>
-            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">Sedang di Mixer (Antrian)</h2>
+            <h2 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4 ml-2">
+                Sedang di Mixer (Antrian)
+            </h2>
             <div id="activeCon" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
         </section>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div class="shift-column p-4">
-                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">Shift 1 (Pagi)</h2>
+                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">
+                    Shift 1 (Pagi)
+                </h2>
                 <div id="pagiCon" class="space-y-3"></div>
             </div>
+
             <div class="shift-column p-4">
-                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">Shift 2 (Siang)</h2>
+                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">
+                    Shift 2 (Siang)
+                </h2>
                 <div id="siangCon" class="space-y-3"></div>
             </div>
+
             <div class="shift-column p-4">
-                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">Shift 3 (Malam)</h2>
+                <h2 class="text-center font-black text-slate-400 text-[10px] uppercase mb-4 tracking-widest">
+                    Shift 3 (Malam)
+                </h2>
                 <div id="malamCon" class="space-y-3"></div>
             </div>
         </div>
     </main>
 
     <script>
-        const URL = "https://script.google.com/macros/s/AKfycbw4NEKQHjEPcSvECH_aYkTJgCW36Rb9-pseST20ZKIa-y8KJ_kOLLzcIg14SxEbin-J/exec";
+        const URL = "https://script.google.com/macros/s/AKfycbzI0mEdtG8UY77vhwfbpqE9K99f-9AM83pl-aDDRPKHg0qbQougyqTooUk8DJCNdTYU/exec";
+
+        function animateValue(el, end, duration = 700) {
+            const start = Number(el.dataset.value || 0);
+            const startTime = performance.now();
+
+            function update(now) {
+                const progress = Math.min((now - startTime) / duration, 1);
+                const value = Math.floor(start + (end - start) * progress);
+                el.innerText = value;
+
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                } else {
+                    el.dataset.value = end;
+                    el.innerText = end;
+                }
+            }
+
+            requestAnimationFrame(update);
+        }
+
+        function progressPercent(value) {
+            const max = 6000;
+            return Math.min((value / max) * 100, 100);
+        }
 
         async function loadData() {
             const res = await fetch(URL);
             const data = await res.json();
             const mon = data.monitor;
 
-            // 1. Render Active
             const act = document.getElementById('activeCon');
-            act.innerHTML = mon.active.length === 0 ? '<p class="text-slate-400 text-xs italic ml-2">Tidak ada pakan di Mixer</p>' : '';
-            mon.active.forEach(i => {
-                act.innerHTML += `<div class="card-active p-4 rounded-2xl shadow-sm">
-                    <div class="flex justify-between text-[9px] font-black uppercase text-amber-600 mb-2"><span>${i.operator}</span><span>${i.shift}</span></div>
-                    <div class="font-bold text-slate-800 text-sm mb-2">${i.pens}</div>
-                    <div class="text-right font-black text-lg">${Math.round(i.tonase)} <small class="text-[10px] text-slate-400 uppercase">kg</small></div>
-                </div>`;
-            });
+            act.innerHTML = mon.active.length === 0
+                ? '<p class="text-slate-400 text-xs italic ml-2">Tidak ada pakan di Mixer</p>'
+                : '';
 
-            // 2. Render Per Shift
-            const renderLog = (containerId, logs) => {
-                const con = document.getElementById(containerId);
-                con.innerHTML = logs.length === 0 ? '<p class="text-center text-[10px] text-slate-300 py-10">Belum ada data</p>' : '';
-                logs.forEach(l => {
-                    con.innerHTML += `<div class="card-done p-3 rounded-xl shadow-sm mb-2">
-                        <div class="flex justify-between items-center">
-                            <span class="font-bold text-xs text-slate-700">${l.pen}</span>
-                            <span class="font-black text-emerald-600 text-xs">${Math.round(l.tonase)} kg</span>
+            mon.active.forEach((i) => {
+                const tonase = Math.round(i.tonase);
+                const pct = progressPercent(tonase);
+
+                act.innerHTML += `
+                    <div class="card-active card-hover scan-line p-4 rounded-2xl">
+                        <div class="flex justify-between text-[9px] font-black uppercase text-amber-600 mb-2">
+                            <span>${i.operator}</span>
+                            <span>${i.shift}</span>
                         </div>
-                        <div class="flex justify-between text-[8px] font-bold text-slate-400 uppercase mt-1">
-                            <span>${l.operator}</span>
-                            <span>${new Date(l.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>
+
+                        <div class="font-bold text-slate-800 text-sm mb-2">${i.pens}</div>
+
+                        <div class="text-right font-black text-lg status-active pulse-live">
+                            <span class="counter-active" data-target="${tonase}">0</span>
+                            <small class="text-[10px] text-slate-400 uppercase">kg</small>
+                        </div>
+
+                        <div class="progress-track">
+                            <div class="progress-bar" style="width:${pct}%"></div>
                         </div>
                     </div>`;
+            });
+
+            document.querySelectorAll('.counter-active').forEach(el => {
+                animateValue(el, Number(el.dataset.target));
+            });
+
+            const renderLog = (containerId, logs) => {
+                const con = document.getElementById(containerId);
+                con.innerHTML = logs.length === 0
+                    ? '<p class="text-center text-[10px] text-slate-300 py-10">Belum ada data</p>'
+                    : '';
+
+                logs.forEach(l => {
+                    const tonase = Math.round(l.tonase);
+                    const pct = progressPercent(tonase);
+
+                    con.innerHTML += `
+                        <div class="electric-done card-hover mb-2">
+                            <div class="p-3 rounded-xl scan-line">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xs text-slate-700">${l.pen}</span>
+                                    <span class="font-black text-emerald-600 text-xs status-done pulse-live">
+                                        <span class="counter-done" data-target="${tonase}">0</span> kg
+                                    </span>
+                                </div>
+
+                                <div class="flex justify-between text-[8px] font-bold text-slate-400 uppercase mt-1">
+                                    <span class="mini-badge">${l.operator}</span>
+                                    <span>${new Date(l.waktu).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})}</span>
+                                </div>
+
+                                <div class="progress-track">
+                                    <div class="progress-bar" style="width:${pct}%"></div>
+                                </div>
+                            </div>
+                        </div>`;
                 });
             };
 
             renderLog('pagiCon', mon.pagi);
             renderLog('siangCon', mon.siang);
             renderLog('malamCon', mon.malam);
+
+            document.querySelectorAll('.counter-done').forEach(el => {
+                animateValue(el, Number(el.dataset.target));
+            });
         }
 
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('id-ID', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+
         window.onload = loadData;
-        setInterval(loadData, 60000); // Auto update 1 menit
+        setInterval(loadData, 60000);
     </script>
 </body>
 </html>
